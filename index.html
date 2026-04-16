@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zyvarta</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #0b0b0b;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: #008000;
+      padding: 10px 10px 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .logo {
+      color: #fff;
+      text-decoration: none;
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 2px;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 2px 0;
+      flex: 0 0 auto;
+    }
+
+    /* Scroll Reveal Styling */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease-out;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      padding: 14px;
+      background: #0b0b0b;
+    }
+
+    .card {
+      background: #1c1c1c;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+      transition: 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #343434, #1f1f1f);
+      position: relative;
+    }
+
+    .thumb::after {
+      content: "NEWS";
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+    }
+
+    .content {
+      padding: 12px 12px 14px;
+    }
+
+    .content h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .content p {
+      margin: 0;
+      color: #cfcfcf;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Navigation Buttons */
+    .nav-container {
+      padding: 10px 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background: #00c853;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .nav-btn.home-btn {
+      background: #333;
+    }
+
+    .nav-btn:disabled {
+      background: #222;
+      color: #666;
+      cursor: not-allowed;
+    }
+
+    .article-wrap {
+      padding: 15px;
+    }
+
+    .article-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0 0 8px;
+      line-height: 1.3;
+    }
+
+    .article-meta {
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 14px;
+    }
+
+    .hero {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #3a3a3a, #1f1f1f);
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+
+    .article-content p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #ddd;
+      margin: 0 0 14px;
+    }
+
+    .section-title {
+      margin: 25px 0 10px;
+      font-size: 16px;
+    }
+
+    .related-grid {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .rel-card {
+      text-decoration: none;
+      color: white;
+      display: block;
+      cursor: pointer;
+      flex: 0 0 140px;
+    }
+
+    .rel-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #333;
+      border-radius: 8px;
+      margin-bottom: 5px;
+    }
+
+    .rel-card p {
+      font-size: 12px;
+      margin: 0;
+      color: #ddd;
+    }
+
+    .share-icons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .share-icons a {
+      background: #222;
+      padding: 6px 10px;
+      border-radius: 5px;
+      color: white;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .comments input, .comments textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 8px;
+      background: #222;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .comments button {
+      background: #00c853;
+      border: none;
+      padding: 8px 12px;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .comment-item {
+      background: #1a1a1a;
+      padding: 8px;
+      margin-top: 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #ddd;
+    }
+
+    .footer {
+      background: #111;
+      color: #ccc;
+      padding: 15px 10px;
+      text-align: center;
+    }
+
+    .footer h2 {
+      color: white;
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+
+    .footer-links a {
+      color: #aaa;
+      margin: 0 8px;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .news-grid { grid-template-columns: 1fr; }
+      .article-title { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="topbar">
+      <a href="#" class="logo" onclick="window.location.reload(); return false;">Zyvarta</a>
+    </div>
+    <nav>
+      <a href="#">Latest</a>
+      <a href="#">Sports</a>
+      <a href="#">Entertainment</a>
+      <a href="#">Tech</a>
+      <a href="#">Politics</a>
+    </nav>
+  </header>
+
+  <main id="homePage" class="page active">
+    <section class="news-grid">
+      <a class="card reveal" href="#" onclick="openArticle(0); return false;">
+        <div class="thumb"></div>
+        <div class="content"><h3>Big Update</h3><p>Latest news short detail yaha dikh sakti hai.</p></div>
+      </a>
+      <a class="card reveal" href="#" onclick="openArticle(1); return false;">
+        <div class="thumb"></div>
+        <div class="content"><h3>Tech News</h3><p>Technology ke latest updates aur trends.</p></div>
+      </a>
+      <a class="card reveal" href="#" onclick="openArticle(2); return false;">
+        <div class="thumb"></div>
+        <div class="content"><h3>Sports News</h3><p>Match, score aur sports ki fresh information.</p></div>
+      </a>
+      <a class="card reveal" href="#" onclick="openArticle(3); return false;">
+        <div class="thumb"></div>
+        <div class="content"><h3>Entertainment</h3><p>Movies, shows aur viral updates ki khabar.</p></div>
+      </a>
+      <a class="card reveal" href="#" onclick="openArticle(4); return false;">
+        <div class="thumb"></div>
+        <div class="content"><h3>Politics</h3><p>Desh aur politics ki important headlines.</p></div>
+      </a>
+      <a class="card reveal" href="#" onclick="openArticle(5); return false;">
+        <div class="thumb"></div>
+        <div class="content"><h3>India News</h3><p>National aur local updates ek hi jagah.</p></div>
+      </a>
+      <a class="card reveal" href="#" onclick="openArticle(6); return false;">
+        <div class="thumb"></div>
+        <div class="content"><h3>World News</h3><p>Duniya bhar ki badi aur useful khabrein.</p></div>
+      </a>
+      <a class="card reveal" href="#" onclick="openArticle(7); return false;">
+        <div class="thumb"></div>
+        <div class="content"><h3>Business</h3><p>Market, finance aur business updates.</p></div>
+      </a>
+      <a class="card reveal" href="#" onclick="openArticle(8); return false;">
+        <div class="thumb"></div>
+        <div class="content"><h3>Startup</h3><p>Naye business ideas aur startup stories.</p></div>
+      </a>
+      <a class="card reveal" href="#" onclick="openArticle(9); return false;">
+        <div class="thumb"></div>
+        <div class="content"><h3>Breaking News</h3><p>Sabse tez aur important fresh updates.</p></div>
+      </a>
+    </section>
+
+    <div class="nav-container reveal">
+      <button class="nav-btn" disabled>← Prev</button>
+      <button class="nav-btn home-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})">Top</button>
+      <button class="nav-btn" onclick="openArticle(0)">Next →</button>
+    </div>
+  </main>
+
+  <main id="articlePage" class="page">
+    <div class="article-wrap">
+      <div class="reveal">
+        <div class="article-title" id="articleTitle">Headline</div>
+        <div class="article-meta" id="articleMeta">Date • By Zyvarta</div>
+        <div class="hero"></div>
+      </div>
+
+      <div class="article-content reveal" id="articleContent"></div>
+
+      <div class="nav-container reveal">
+        <button id="prevBtn" class="nav-btn" onclick="prevArticle()">← Back</button>
+        <button class="nav-btn home-btn" onclick="showHome()">Home</button>
+        <button id="nextBtn" class="nav-btn" onclick="nextArticle()">Next →</button>
+      </div>
+
+      <div class="section-title reveal">Related News</div>
+      <div class="related-grid reveal">
+        <a href="#" class="rel-card" onclick="openArticle(1); return false;"><div class="rel-thumb"></div><p>Tech News</p></a>
+        <a href="#" class="rel-card" onclick="openArticle(2); return false;"><div class="rel-thumb"></div><p>Sports News</p></a>
+        <a href="#" class="rel-card" onclick="openArticle(3); return false;"><div class="rel-thumb"></div><p>Entertainment</p></a>
+      </div>
+
+      <div class="share reveal">
+        <div class="section-title">Share this news</div>
+        <div class="share-icons">
+          <a id="wa" href="#" target="_blank">WhatsApp</a>
+          <a id="fb" href="#" target="_blank">Facebook</a>
+          <a id="tw" href="#" target="_blank">Twitter</a>
+        </div>
+      </div>
+
+      <div class="comments reveal">
+        <h3>Comments</h3>
+        <input id="name" placeholder="Your name" />
+        <textarea id="text" placeholder="Write comment..."></textarea>
+        <button onclick="addComment()">Post</button>
+        <div id="list"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="reveal">
+      <h2>Zyvarta</h2>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+        <a href="#">Privacy</a>
+      </div>
+      <p style="font-size: 11px; margin-top: 10px;">© 2026 Zyvarta. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    let currentIdx = 0;
+    const articles = [
+      { title: "Big Update", content: ["Sample detail 1", "Sample detail 2"] },
+      { title: "Tech News", content: ["Latest gadgets", "Future tech"] },
+      { title: "Sports News", content: ["Match results", "Player stats"] },
+      { title: "Entertainment", content: ["Movie reviews", "Celebrity gossip"] },
+      { title: "Politics", content: ["Election updates", "Policy changes"] },
+      { title: "India News", content: ["National headlines", "Regional news"] },
+      { title: "World News", content: ["Global events", "International affairs"] },
+      { title: "Business", content: ["Market trends", "Financial news"] },
+      { title: "Startup", content: ["New ventures", "Entrepreneur stories"] },
+      { title: "Breaking News", content: ["Alert 1", "Alert 2"] }
+    ];
+
+    // Scroll Reveal Logic
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    function initReveal() {
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
+
+    function showHome() {
+      document.getElementById("homePage").classList.add("active");
+      document.getElementById("articlePage").classList.remove("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      initReveal();
+    }
+
+    function openArticle(index) {
+      currentIdx = index;
+      const art = articles[index];
+      document.getElementById("articleTitle").textContent = art.title;
+      document.getElementById("articleContent").innerHTML = art.content.map(p => `<p>${p}</p>`).join("");
+      
+      document.getElementById("prevBtn").disabled = currentIdx === 0;
+      document.getElementById("nextBtn").disabled = currentIdx === articles.length - 1;
+
+      document.getElementById("homePage").classList.remove("active");
+      document.getElementById("articlePage").classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      initReveal();
+    }
+
+    function prevArticle() { if (currentIdx > 0) openArticle(currentIdx - 1); }
+    function nextArticle() { if (currentIdx < articles.length - 1) openArticle(currentIdx + 1); }
+
+    function addComment() {
+      const n = document.getElementById("name").value;
+      const t = document.getElementById("text").value;
+      if (n && t) {
+        const d = document.createElement("div");
+        d.className = "comment-item";
+        d.innerHTML = `<strong>${n}:</strong> ${t}`;
+        document.getElementById("list").prepend(d);
+        document.getElementById("name").value = ""; document.getElementById("text").value = "";
+      }
+    }
+
+    window.onload = initReveal;
+  </script>
+</body>
+</html>
